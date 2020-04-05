@@ -1,0 +1,5 @@
+<map id="Graphical Class Hierarchy" name="Graphical Class Hierarchy">
+<area shape="rect" id="node1" href="$struct_bayan_data.html" title="The BayanData struct интерфейс для хранения данных и удаления дубликатов файлов " alt="" coords="5,46,100,73"/>
+<area shape="rect" id="node2" href="$struct_bayan_data_impl.html" title="The BayanDataImpl struct реализация интерфейса считывающая все файлы и хранящая хэш для них ..." alt="" coords="149,5,324,47"/>
+<area shape="rect" id="node3" href="$struct_bayan_data_size_first_impl.html" title="The BayanDataImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнив..." alt="" coords="148,71,325,112"/>
+</map>
