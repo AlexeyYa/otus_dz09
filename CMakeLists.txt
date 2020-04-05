@@ -48,16 +48,16 @@ add_executable(tests tests.cpp)
 
 if($ENV{APPVEYOR_BUILD_NUMBER})
 else()
+    set_target_properties(bayan PROPERTIES COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK)
 endif()
 
 if($ENV{TRAVIS_BUILD_NUMBER})
-    target_link_libraries(tests PRIVATE gtest gtest_main ${Boost_LIBRARIES} stdc++fs)
-    target_link_libraries(bayan ${Boost_LIBRARIES} stdc++fs)
+    target_link_libraries(tests PRIVATE gtest gtest_main Boost::program_options stdc++fs)
+    target_link_libraries(bayan Boost::program_options stdc++fs)
 else()
-    target_link_libraries(tests PRIVATE gtest gtest_main ${Boost_LIBRARIES})
+    target_link_libraries(tests PRIVATE gtest gtest_main Boost::program_options)
     target_link_libraries(bayan Boost::program_options)
 endif()
-set_target_properties(bayan PROPERTIES COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK)
 
 install(TARGETS bayan DESTINATION bin)
 
