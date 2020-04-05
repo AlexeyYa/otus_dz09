@@ -9,7 +9,7 @@ configuration:
   - Release
   
 before_build:
-  - cmake -G "Visual Studio 16 2019"
+  - cmake -G "Visual Studio 16 2019" -DBOOST_ROOT=C:\Libraries\boost_1_71_0 .
 
 build:
   project: $(APPVEYOR_BUILD_FOLDER)\bayan.sln
