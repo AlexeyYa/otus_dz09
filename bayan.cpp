@@ -340,13 +340,35 @@ void BayanDataHashChunkImpl<Hash, hash_size>::RemoveDuplicate()
     {
         if (filesize.second.size() > 1)
         {
-            std::map<std::array<char, hash_size>, std::vector<fs::path>> hashes;
-
-            size_t current = 0;
+            auto cmpfile = *filesize.second.begin();
+            bool first = true;
             std::vector<char> buffer(buffer_size, 0);
+            std::vector<std::vector<char>> hashes;
 
+            for (const auto& file : filesize.second)
+            {
+                if (first)
+                {
+                    first = false;
+                    continue;
+                }
+
+                size_t current = 0;
+                while (current < filesize.first)
+                {
+                    std::ifstream stream(file, std::ios::in|std::ios::binary);
+                    stream.seekg(current);
+
+                    stream.read(&buffer[0], buffer_size);
+                    auto tmphash = hash_func(buffer);
+
+                }
+            }
+            /*
+            // Read blocks
             while (current < filesize.first)
             {
+                // Get hash for blocks
                 for (const auto& file : filesize.second)
                 {
                     std::ifstream stream(file, std::ios::in|std::ios::binary);
@@ -376,7 +398,7 @@ void BayanDataHashChunkImpl<Hash, hash_size>::RemoveDuplicate()
                 }
 
                 current += buffer_size;
-            }
+            }*/
         }
     }
 }
