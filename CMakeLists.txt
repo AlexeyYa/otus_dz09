@@ -37,7 +37,16 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Boost COMPONENTS program_options REQUIRED)
+
+if($ENV{APPVEYOR_BUILD_NUMBER})
+    set (Boost_USE_STATIC_LIBS ON)
+    set (Boost_USE_MULTITHREADED ON)
+    set (Boost_USE_STATIC_RUNTIME OFF)
+else()
+    set_target_properties(bayan PROPERTIES COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK)
+endif()
+
+find_package(Boost COMPONENTS program_options)
 include_directories(${Boost_INCLUDE_DIR})
 
 configure_file(bintray.json.in bintray.json)
@@ -47,19 +56,14 @@ add_executable(bayan main.cpp bayan.cpp)
 add_executable(tests tests.cpp)
 
 if($ENV{APPVEYOR_BUILD_NUMBER})
-    set (Boost_USE_STATIC_LIBS ON)
-    set (Boost_USE_STATIC_RUNTIME OFF)
-
     target_link_libraries(tests PRIVATE gtest gtest_main Boost::program_options)
     target_link_libraries(bayan Boost::program_options)
 elseif($ENV{TRAVIS_BUILD_NUMBER})
     target_link_libraries(tests PRIVATE gtest gtest_main Boost::program_options stdc++fs)
     target_link_libraries(bayan Boost::program_options stdc++fs)
-    set_target_properties(bayan PROPERTIES COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK)
 else()
     target_link_libraries(tests PRIVATE gtest gtest_main Boost::program_options)
     target_link_libraries(bayan Boost::program_options)
-    set_target_properties(bayan PROPERTIES COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK)
 endif()
 
 install(TARGETS bayan DESTINATION bin)
