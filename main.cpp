@@ -4,11 +4,16 @@
  
 #include "bayan.h"
 
+#include <exception>
+
 int main(int argc, char *argv[])
 {
-    auto bayan = ParseArgs(argc, argv);
-
-    bayan.Run();
+    try {
+        auto bayan = ParseArgs(argc, argv);
+        bayan.Run();
+    } catch (std::exception e) {
+        std::cerr << "Error: " << e.what() << std::endl;
+    }
 
     return 0;
 }

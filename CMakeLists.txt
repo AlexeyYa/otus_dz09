@@ -37,7 +37,7 @@ add_subdirectory(${CMAKE_CURRENT_BINARY_DIR}/googletest-src
 set(CMAKE_CXX_STANDARD 17)
 set(CMAKE_CXX_STANDARD_REQUIRED ON)
 
-find_package(Boost)
+find_package(Boost COMPONENTS program_options REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 configure_file(bintray.json.in bintray.json)
