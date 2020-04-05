@@ -1,0 +1,43 @@
+language: cpp
+os: linux
+dist: bionic
+compiler: gcc
+
+before_install:
+  - chmod +x build.sh
+  - chmod +x build_coverty.sh
+  - echo -n | openssl s_client -connect https://scan.coverity.com:443 | sed -ne '/-BEGIN CERTIFICATE-/,/-END CERTIFICATE-/p' | sudo tee -a /etc/ssl/certs/ca-
+
+addons:
+  apt:
+      packages:
+        - doxygen
+        - doxygen-doc
+        - doxygen-latex
+        - doxygen-gui
+        - graphviz
+  coverity_scan:
+      project:
+        name: "AlexeyYa/otus_dz09"
+        description: "otus_dz09 coverity"
+      notification_email: l337.cat@gmail.com
+      build_command: "./build_coverty.sh"
+      branch_pattern: master
+
+script: ./build.sh
+
+deploy:
+  - provider: bintray
+    skip_cleanup: true
+    user: alexeyya
+    key: ${BINTRAY_KEY}
+    file: ./build/bintray.json
+  
+  - provider: pages
+    skip_cleanup: true
+    github_token: ${GITHUB_TOKEN}
+    local_dir: ./doc/html
+    keep_history: true
+    on:
+      branch: master
+    

@@ -1,0 +1,37 @@
+version: '0.1.{build}'
+
+image: Visual Studio 2019
+
+platform:
+  - x64
+
+configuration:
+  - Release
+  
+before_build:
+  - cmake -G "Visual Studio 16 2019"
+
+build:
+  project: $(APPVEYOR_BUILD_FOLDER)\bayan.sln
+
+after_build:
+  - ctest -C Release
+  - cpack -G ZIP $(APPVEYOR_BUILD_FOLDER)
+
+artifacts:
+  - path: '*.zip'
+    name: zip-x64
+
+deploy:
+- provider: BinTray
+  username: alexeyya
+  api_key:
+    secure: AxjYJbTd/GAJNYnkV6NpQoxE8JKQbHBT0ZfCa5kg2MvJObnYw7XYQq8EZ+wAjjrn
+  subject: alexeyya
+  repo: otus
+  package: dz09
+  artifact: zip-x64
+  publish: true
+  override: true
+  explode: true
+  
