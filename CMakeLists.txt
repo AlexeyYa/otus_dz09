@@ -47,6 +47,7 @@ add_executable(bayan main.cpp bayan.cpp)
 add_executable(tests tests.cpp)
 
 if($ENV{APPVEYOR_BUILD_NUMBER})
+    add_definitions("-DBOOST_ALL_NO_LIB=1")
 else()
     set_target_properties(bayan PROPERTIES COMPILE_DEFINITIONS BOOST_TEST_DYN_LINK)
 endif()
