@@ -94,6 +94,7 @@ Bayan ParseArgs(int argc, char *argv[])
 Bayan::Bayan() : m_depth(0), m_minsize(0), m_block(0)
 {
     m_isValid = false;
+    m_haveMask = false;
 }
 
 /*!
