@@ -1,4 +1,5 @@
 <map id="BayanData" name="BayanData">
-<area shape="rect" id="node2" href="$struct_bayan_data_impl.html" title="The BayanDataImpl struct реализация интерфейса считывающая все файлы и хранящая хэш для них ..." alt="" coords="5,80,180,121"/>
-<area shape="rect" id="node3" href="$struct_bayan_data_size_first_impl.html" title="The BayanDataImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнив..." alt="" coords="204,80,381,121"/>
+<area shape="rect" id="node2" href="$struct_bayan_data_hash_chunk_impl.html" title="The BayanDataHashChunkImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадени..." alt="" coords="148,5,345,47"/>
+<area shape="rect" id="node3" href="$struct_bayan_data_impl.html" title="The BayanDataImpl struct реализация интерфейса считывающая все файлы и хранящая хэш для них ..." alt="" coords="159,71,334,112"/>
+<area shape="rect" id="node4" href="$struct_bayan_data_size_first_impl.html" title="The BayanDataSizeFirstImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадени..." alt="" coords="158,136,335,177"/>
 </map>

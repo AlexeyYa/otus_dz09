@@ -73,6 +73,7 @@ $(function() {
 <code>#include &lt;boost/program_options.hpp&gt;</code><br />
 <code>#include &lt;iostream&gt;</code><br />
 <code>#include &lt;sstream&gt;</code><br />
+<code>#include &lt;fstream&gt;</code><br />
 <code>#include &lt;string&gt;</code><br />
 <code>#include &lt;vector&gt;</code><br />
 <code>#include &lt;set&gt;</code><br />
@@ -84,7 +85,7 @@ Include dependency graph for bayan.h:</div>
 <div class="dyncontent">
 <div class="center"><img src="bayan_8h__incl.png" border="0" usemap="#bayan_8h" alt=""/></div>
 <map name="bayan_8h" id="bayan_8h">
-<area shape="rect" id="node2" href="hash_8h.html" title="хэш функции для баяна " alt="" coords="601,80,666,107"/>
+<area shape="rect" id="node2" href="hash_8h.html" title="хэш функции для баяна " alt="" coords="651,80,717,107"/>
 </map>
 </div>
 </div><div class="textblock"><div class="dynheader">
@@ -111,7 +112,10 @@ Classes</h2></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="struct_bayan_data_impl.html" title="The BayanDataImpl struct реализация интерфейса считывающая все файлы и хранящая хэш для них ...">BayanDataImpl</a> struct реализация интерфейса считывающая все файлы и хранящая хэш для них  <a href="struct_bayan_data_impl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_bayan_data_size_first_impl.html">BayanDataSizeFirstImpl&lt; Hash, hash_size &gt;</a></td></tr>
-<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="struct_bayan_data_impl.html" title="The BayanDataImpl struct реализация интерфейса считывающая все файлы и хранящая хэш для них ...">BayanDataImpl</a> struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш  <a href="struct_bayan_data_size_first_impl.html#details">More...</a><br /></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="struct_bayan_data_size_first_impl.html" title="The BayanDataSizeFirstImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадени...">BayanDataSizeFirstImpl</a> struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш  <a href="struct_bayan_data_size_first_impl.html#details">More...</a><br /></td></tr>
+<tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
+<tr class="memitem:"><td class="memItemLeft" align="right" valign="top">struct &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="struct_bayan_data_hash_chunk_impl.html">BayanDataHashChunkImpl&lt; Hash, hash_size &gt;</a></td></tr>
+<tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">The <a class="el" href="struct_bayan_data_hash_chunk_impl.html" title="The BayanDataHashChunkImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадени...">BayanDataHashChunkImpl</a> struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш  <a href="struct_bayan_data_hash_chunk_impl.html#details">More...</a><br /></td></tr>
 <tr class="separator:"><td class="memSeparator" colspan="2">&#160;</td></tr>
 <tr class="memitem:"><td class="memItemLeft" align="right" valign="top">class &#160;</td><td class="memItemRight" valign="bottom"><a class="el" href="class_bayan.html">Bayan</a></td></tr>
 <tr class="memdesc:"><td class="mdescLeft">&#160;</td><td class="mdescRight">Класс для удаление дупликатов файлов  <a href="class_bayan.html#details">More...</a><br /></td></tr>
