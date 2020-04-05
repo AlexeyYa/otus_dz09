@@ -16,11 +16,16 @@
 #include <set>
 #include <map>
 #include <regex>
-#include <filesystem>
-//#include <experimental/filesystem>
 
+// Workaround for travis
+#ifdef __GNUC__
+#include <experimental/filesystem>
+namespace fs = std::experimental::filesystem;
+#else
+#include <filesystem>
 namespace fs = std::filesystem;
-//namespace fs = std::experimental::filesystem;
+#endif
+
 
 /*!
  * @brief The FileData struct для хранения данных в BayanDataImpl
@@ -39,6 +44,7 @@ bool operator<(const FileData& lhs, const FileData& rhs);
  */
 struct BayanData
 {
+    virtual ~BayanData(){}
     virtual void Add(fs::path file) = 0;
 
     virtual void RemoveDuplicate() = 0;
