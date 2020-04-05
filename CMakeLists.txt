@@ -49,7 +49,7 @@ add_executable(tests tests.cpp)
 if($ENV{APPVEYOR_BUILD_NUMBER})
     set(Boost_USE_STATIC_LIBS ON)
 
-    add_library("boost_po" STATIC "C:\\Libraries\\boost_1_71_0\\lib64-msvc-14.2\\boost_program_options-vc142-mt-x64-1_71.lib")
+    add_library("boost_po" STATIC "C:/Libraries/boost_1_71_0/lib64-msvc-14.2/boost_program_options-vc142-mt-x64-1_71.lib")
     target_link_libraries(tests PRIVATE gtest gtest_main)
 elseif($ENV{TRAVIS_BUILD_NUMBER})
     target_link_libraries(tests PRIVATE gtest gtest_main Boost::program_options stdc++fs)
