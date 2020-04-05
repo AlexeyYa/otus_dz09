@@ -45,6 +45,18 @@ struct CRC32HASH
             result[i] = static_cast<char>(crc.checksum() >> (i * 8));
         return result;
     }
+
+    std::array<char,4> operator()(const std::vector<char> &buffer)
+    {
+        boost::crc_32_type crc;
+
+        crc.process_bytes(&buffer[0], buffer.size());
+
+        std::array<char, 4> result;
+        for (size_t i = 0; i < 4; i++)
+            result[i] = static_cast<char>(crc.checksum() >> (i * 8));
+        return result;
+    }
 };
 
 /*!
@@ -81,6 +93,22 @@ struct MD5HASH
             result[i] = *(ptr + i);
         return result;
     }
+
+    std::array<char,16> operator()(const std::vector<char> &buffer)
+    {
+        boost::uuids::detail::md5 md5;
+
+        md5.process_bytes(&buffer[0], buffer.size());
+
+        boost::uuids::detail::md5::digest_type digest;
+        md5.get_digest(digest);
+        auto ptr = reinterpret_cast<char*>(digest);
+
+        std::array<char, 16> result;
+        for (size_t i = 0; i < 16; i++)
+            result[i] = *(ptr + i);
+        return result;
+    }
 };
 
 /*!
@@ -107,6 +135,22 @@ struct SHA1HASH
             size_t byte_cnt = static_cast<size_t>(stream.gcount());
             sha1.process_bytes(&buffer[0], byte_cnt);
         } while(stream);
+
+        boost::uuids::detail::sha1::digest_type digest;
+        sha1.get_digest(digest);
+        auto ptr = reinterpret_cast<char*>(digest);
+
+        std::array<char, 20> result;
+        for (size_t i = 0; i < 20; i++)
+            result[i] = *(ptr + i);
+        return result;
+    }
+
+    std::array<char,20> operator()(const std::vector<char> &buffer)
+    {
+        boost::uuids::detail::sha1 sha1;
+
+        sha1.process_bytes(&buffer[0], buffer.size());
 
         boost::uuids::detail::sha1::digest_type digest;
         sha1.get_digest(digest);

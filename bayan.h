@@ -11,6 +11,7 @@
 
 #include <iostream>
 #include <sstream>
+#include <fstream>
 #include <string>
 #include <vector>
 #include <set>
@@ -67,12 +68,28 @@ private:
 };
 
 /*!
- * @brief The BayanDataImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш
+ * @brief The BayanDataSizeFirstImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш
  */
 template <typename Hash, size_t hash_size = Hash::size>
 struct BayanDataSizeFirstImpl : BayanData
 {
     BayanDataSizeFirstImpl(size_t buffer_size) : buffer_size(buffer_size){}
+    virtual void Add(fs::path file) override;
+
+    virtual void RemoveDuplicate() override;
+private:
+    Hash hash_func;
+    size_t buffer_size;
+    std::map<size_t, std::set<fs::path>> m_data;
+};
+
+/*!
+ * @brief The BayanDataHashChunkImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш
+ */
+template <typename Hash, size_t hash_size = Hash::size>
+struct BayanDataHashChunkImpl : BayanData
+{
+    BayanDataHashChunkImpl(size_t buffer_size) : buffer_size(buffer_size){}
     virtual void Add(fs::path file) override;
 
     virtual void RemoveDuplicate() override;

@@ -329,3 +329,64 @@ void BayanDataSizeFirstImpl<Hash, hash_size>::Add(fs::path file)
 {
     m_data[fs::file_size(file)].emplace(file);
 }
+
+/*!
+ * @brief BayanDataSizeFirstImpl<Hash, hash_size>::RemoveDuplicate Удаление дубликатов из списка файлов
+ */
+template <typename Hash, size_t hash_size>
+void BayanDataHashChunkImpl<Hash, hash_size>::RemoveDuplicate()
+{
+    for (const auto& filesize : m_data)
+    {
+        if (filesize.second.size() > 1)
+        {
+            std::map<std::array<char, hash_size>, std::vector<fs::path>> hashes;
+
+            size_t current = 0;
+            std::vector<char> buffer(buffer_size, 0);
+
+            while (current < filesize.first)
+            {
+                for (const auto& file : filesize.second)
+                {
+                    std::ifstream stream(file, std::ios::in|std::ios::binary);
+                    stream.seekg(current);
+
+                    stream.read(&buffer[0], buffer_size);
+
+                    auto tmphash = hash_func(buffer);
+                    hashes[tmphash].emplace_back(file);
+                }
+
+                for (const auto& hash : hashes)
+                {
+
+                    auto cmpfile = *hash.second.begin();
+                    bool first = true;
+                    for (const auto& file : hash.second)
+                    {
+                        if (first)
+                        {
+                            first = false;
+                            continue;
+                        }
+                        fs::remove(file);
+                        std::cout << "File removed: " << file.string() << std::endl;
+                    }
+                }
+
+                current += buffer_size;
+            }
+        }
+    }
+}
+
+/*!
+ * @brief BayanDataSizeFirstImpl<Hash, hash_size>::Add Добавление в список файлов для обработки
+ * @param file
+ */
+template <typename Hash, size_t hash_size>
+void BayanDataHashChunkImpl<Hash, hash_size>::Add(fs::path file)
+{
+    m_data[fs::file_size(file)].emplace(file);
+}
