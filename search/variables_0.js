@@ -1,4 +1,4 @@
 var searchData=
 [
-  ['path',['path',['../struct_file_data.html#ab5ab355ee26c162fd83fc9c7b7345986',1,'FileData']]]
+  ['num_5fof_5fblocks',['num_of_blocks',['../struct_file_info.html#a897ab7a4cfef13e529f3513738a8af9b',1,'FileInfo']]]
 ];

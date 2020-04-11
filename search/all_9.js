@@ -1,6 +1,6 @@
 var searchData=
 [
-  ['sha1hash',['SHA1HASH',['../struct_s_h_a1_h_a_s_h.html',1,'']]],
-  ['size',['size',['../struct_file_data.html#a458b0b76aa4d8e11b4abc09924d9189c',1,'FileData::size()'],['../struct_c_r_c32_h_a_s_h.html#a82b8178d1878153cd8cf6d8bba3c2ee7',1,'CRC32HASH::size()'],['../struct_m_d5_h_a_s_h.html#ad772b6b6c801da19654014e6a48f8aaa',1,'MD5HASH::size()'],['../struct_s_h_a1_h_a_s_h.html#aad984a7f491c1f57f4654f1623d9318b',1,'SHA1HASH::size()']]],
-  ['std',['std',['../namespacestd.html',1,'']]]
+  ['readme_2emd',['README.md',['../_r_e_a_d_m_e_8md.html',1,'']]],
+  ['removeduplicate',['RemoveDuplicate',['../struct_bayan_data.html#aa38238b225e084bc28ae148341e7cb51',1,'BayanData::RemoveDuplicate()'],['../struct_bayan_data_impl.html#a4ed8fcd8f144bec5eace5ca1fde1e56e',1,'BayanDataImpl::RemoveDuplicate()'],['../struct_bayan_data_size_first_impl.html#a46ecba79349c8bffe7138f5f9c446567',1,'BayanDataSizeFirstImpl::RemoveDuplicate()'],['../struct_bayan_data_hash_chunk_impl.html#a174e76563a65522703fbcea8773bc58d',1,'BayanDataHashChunkImpl::RemoveDuplicate()']]],
+  ['run',['Run',['../class_bayan.html#a2800ba946d1ab5754d903edbe9e5a9c8',1,'Bayan']]]
 ];
