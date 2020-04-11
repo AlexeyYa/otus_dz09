@@ -16,6 +16,7 @@
 #include <vector>
 #include <set>
 #include <map>
+#include <queue>
 #include <regex>
 
 // Workaround for travis
@@ -84,19 +85,30 @@ private:
 };
 
 /*!
+ * @brief The FileInfo struct
+ */
+template <size_t hash_size>
+struct FileInfo
+{
+    FileInfo(fs::path path, size_t num_of_blocks) : path(path), num_of_blocks(num_of_blocks){}
+    fs::path path;
+    size_t num_of_blocks;
+};
+
+/*!
  * @brief The BayanDataHashChunkImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш
  */
 template <typename Hash, size_t hash_size = Hash::size>
 struct BayanDataHashChunkImpl : BayanData
 {
-    BayanDataHashChunkImpl(size_t buffer_size) : buffer_size(buffer_size){}
+    BayanDataHashChunkImpl(size_t block_size) : block_size(block_size){}
     virtual void Add(fs::path file) override;
 
     virtual void RemoveDuplicate() override;
 private:
     Hash hash_func;
-    size_t buffer_size;
-    std::map<size_t, std::set<fs::path>> m_data;
+    size_t block_size;
+    std::vector<FileInfo<hash_size>> m_data;
 };
 
 /*!

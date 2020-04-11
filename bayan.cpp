@@ -115,15 +115,15 @@ Bayan::Bayan(const std::vector<std::string>& dirs, const std::vector<std::string
     m_haveMask = false;
     if (hashalg == "crc32")
     {
-        m_filedata = std::make_unique<BayanDataSizeFirstImpl<CRC32HASH>>(m_block);
+        m_filedata = std::make_unique<BayanDataHashChunkImpl<CRC32HASH>>(m_block);
     }
     else if (hashalg == "md5")
     {
-        m_filedata = std::make_unique<BayanDataSizeFirstImpl<MD5HASH>>(m_block);
+        m_filedata = std::make_unique<BayanDataHashChunkImpl<MD5HASH>>(m_block);
     }
     else if (hashalg == "sha1")
     {
-        m_filedata = std::make_unique<BayanDataSizeFirstImpl<SHA1HASH>>(m_block);
+        m_filedata = std::make_unique<BayanDataHashChunkImpl<SHA1HASH>>(m_block);
     }
     else
     {
@@ -337,69 +337,94 @@ void BayanDataSizeFirstImpl<Hash, hash_size>::Add(fs::path file)
 template <typename Hash, size_t hash_size>
 void BayanDataHashChunkImpl<Hash, hash_size>::RemoveDuplicate()
 {
-    for (const auto& filesize : m_data)
+    if (m_data.size() > 1)
     {
-        if (filesize.second.size() > 1)
-        {
-            auto cmpfile = *filesize.second.begin();
-            bool first = true;
-            std::vector<char> buffer(buffer_size, 0);
-            std::vector<std::vector<char>> hashes;
+        std::queue<std::vector<size_t>> potential_dupes;
+        std::vector<size_t> vec;
+        std::vector<char> buffer(block_size);
+        size_t cur_block = 0, counter = 0, next_counter = 1, tmp_count = 0;
 
-            for (const auto& file : filesize.second)
+        // 1st block for all files
+        for (size_t i = 0; i < m_data.size(); i++)
+            vec.emplace_back(i);
+        potential_dupes.emplace(std::move(vec));
+        vec.clear();
+
+        // Prepare as buffer
+        vec.resize(hash_size);
+
+        while (!potential_dupes.empty())
+        {
+            counter++;
+
+            auto same_hash_files = potential_dupes.front();
+            potential_dupes.pop();
+
+            std::map<std::array<char, hash_size>, std::vector<size_t>> hash_idx;
+            // Process files
+            for (auto idx : same_hash_files)
             {
-                if (first)
+                // Reset buffer to 0
+                for (auto &ch : vec) ch = 0;
+
+                // Open and read file block
+                auto filestring = m_data[idx].path.string();
+                std::ifstream stream(filestring, std::ios::in|std::ios::binary);
+                if(!stream)
                 {
-                    first = false;
+                    std::cerr << ("Could not open file for CRC calculation: " + filestring) << std::endl;
                     continue;
                 }
+                stream.seekg(block_size * cur_block);
+                stream.read(&buffer[0], block_size);
 
-                size_t current = 0;
-                while (current < filesize.first)
-                {
-                    std::ifstream stream(file, std::ios::in|std::ios::binary);
-                    stream.seekg(current);
-
-                    stream.read(&buffer[0], buffer_size);
-                    auto tmphash = hash_func(buffer);
-
-                }
+                // Get hash and place into map
+                std::array<char, hash_size> hash = hash_func(buffer);
+                hash_idx[hash].emplace_back(idx);
             }
-            /*
-            // Read blocks
-            while (current < filesize.first)
+
+            // Check for the end and put in queue again if needed
+            for (auto q : hash_idx)
             {
-                // Get hash for blocks
-                for (const auto& file : filesize.second)
+                // Check end of file
+                std::vector<size_t> eof;
+                for (auto idx : q.second)
                 {
-                    std::ifstream stream(file, std::ios::in|std::ios::binary);
-                    stream.seekg(current);
-
-                    stream.read(&buffer[0], buffer_size);
-
-                    auto tmphash = hash_func(buffer);
-                    hashes[tmphash].emplace_back(file);
-                }
-
-                for (const auto& hash : hashes)
-                {
-
-                    auto cmpfile = *hash.second.begin();
-                    bool first = true;
-                    for (const auto& file : hash.second)
+                    if (m_data[idx].num_of_blocks == cur_block - 1)
                     {
-                        if (first)
-                        {
-                            first = false;
-                            continue;
-                        }
-                        fs::remove(file);
-                        std::cout << "File removed: " << file.string() << std::endl;
+                        eof.emplace_back(idx);
                     }
                 }
 
-                current += buffer_size;
-            }*/
+                // Delete duplicates
+                bool first = true;
+                for (auto idx : eof)
+                {
+                    if (first) first = false;
+                    else
+                    {
+                        auto file = m_data[idx].path;
+                        fs::remove(file);
+                        std::cout << "File removed: " << file.string() << std::endl;
+                    }
+                    q.second.erase(std::find(q.second.begin(), q.second.end(), idx));
+                }
+
+                // Put in queue
+                if (q.second.size() > 1)
+                {
+                    potential_dupes.push(q.second);
+                    tmp_count++;
+                }
+            }
+
+            // Check if current block complete
+            if (counter == next_counter)
+            {
+                cur_block++;
+                next_counter += tmp_count;
+                tmp_count = 0;
+            }
         }
     }
 }
@@ -411,5 +436,6 @@ void BayanDataHashChunkImpl<Hash, hash_size>::RemoveDuplicate()
 template <typename Hash, size_t hash_size>
 void BayanDataHashChunkImpl<Hash, hash_size>::Add(fs::path file)
 {
-    m_data[fs::file_size(file)].emplace(file);
+    size_t n_blocks = (fs::file_size(file) + block_size - 1) / block_size;
+    m_data.emplace_back(file, n_blocks);
 }
