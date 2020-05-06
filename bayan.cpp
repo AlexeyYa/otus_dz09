@@ -91,11 +91,8 @@ Bayan ParseArgs(int argc, char *argv[])
 /*!
  * @brief Bayan::Bayan Конструктор по умолчанию возвращающий невалидное состояние
  */
-Bayan::Bayan() : m_depth(0), m_minsize(0), m_block(0)
-{
-    m_isValid = false;
-    m_haveMask = false;
-}
+Bayan::Bayan() : m_isValid(false), m_haveMask(false), m_depth(0), m_minsize(0), m_block(0)
+{}
 
 /*!
  * @brief Bayan::Bayan Конструктор со всеми аргументами
@@ -109,10 +106,8 @@ Bayan::Bayan() : m_depth(0), m_minsize(0), m_block(0)
  */
 Bayan::Bayan(const std::vector<std::string>& dirs, const std::vector<std::string>& excluded, size_t depth, size_t minsize,
              const std::vector<std::string>& masks, size_t block, const std::string& hashalg)
-           : m_depth(depth), m_minsize(minsize), m_block(block), m_hashalg(hashalg)
+           : m_isValid(true), m_haveMask(false), m_depth(depth), m_minsize(minsize), m_block(block), m_hashalg(hashalg)
 {
-    m_isValid = true;
-    m_haveMask = false;
     if (hashalg == "crc32")
     {
         m_filedata = std::make_unique<BayanDataHashChunkImpl<CRC32HASH>>(m_block);
@@ -145,7 +140,7 @@ Bayan::Bayan(const std::vector<std::string>& dirs, const std::vector<std::string
         m_haveMask = true;
         std::stringstream ss;
         bool first = true;
-        for (auto mask : masks)
+        for (const auto& mask : masks)
         {
             if (first)
                 first = false;
@@ -244,94 +239,6 @@ void Bayan::ProcessFolder(const fs::path& dir, const size_t current_depth) const
 }
 
 /*!
- * @brief BayanDataImpl<Hash, hash_size>::RemoveDuplicate Удаление дубликатов из списка файлов
- */
-template <typename Hash, size_t hash_size>
-void BayanDataImpl<Hash, hash_size>::RemoveDuplicate()
-{
-    for (const auto& hashcode : m_data)
-    {
-        auto cmpfile = *hashcode.second.begin();
-        bool first = true;
-        for (const auto& file : hashcode.second)
-        {
-            if (first)
-            {
-                first = false;
-                continue;
-            }
-            // Duplicate removal part, same hash and size, or change to next
-            if (cmpfile.size == file.size)
-            {
-                fs::remove(file.path);
-                std::cout << "File removed: " << file.path << std::endl;
-            }
-            else
-                cmpfile = file;
-        }
-    }
-}
-
-/*!
- * @brief BayanDataImpl<Hash, hash_size>::Add Добавление в список файлов для обработки
- * @param file
- */
-template <typename Hash, size_t hash_size>
-void BayanDataImpl<Hash, hash_size>::Add(fs::path file)
-{
-    auto tmphash = hash_func(file.string(), buffer_size);
-
-    m_data[tmphash].emplace(file, fs::file_size(file));
-}
-
-/*!
- * @brief BayanDataSizeFirstImpl<Hash, hash_size>::RemoveDuplicate Удаление дубликатов из списка файлов
- */
-template <typename Hash, size_t hash_size>
-void BayanDataSizeFirstImpl<Hash, hash_size>::RemoveDuplicate()
-{
-    for (const auto& filesize : m_data)
-    {
-        if (filesize.second.size() > 1)
-        {
-            std::map<std::array<char, hash_size>, std::vector<fs::path>> hashes;
-            for (const auto& file : filesize.second)
-            {
-                auto tmphash = hash_func(file.string(), buffer_size);
-                hashes[tmphash].emplace_back(file);
-            }
-
-            for (const auto& hash : hashes)
-            {
-
-                auto cmpfile = *hash.second.begin();
-                bool first = true;
-                for (const auto& file : hash.second)
-                {
-                    if (first)
-                    {
-                        first = false;
-                        continue;
-                    }
-                    fs::remove(file);
-                    std::cout << "File removed: " << file.string() << std::endl;
-                }
-            }
-        }
-    }
-}
-
-/*!
- * @brief BayanDataSizeFirstImpl<Hash, hash_size>::Add Добавление в список файлов для обработки
- * @param file
- */
-template <typename Hash, size_t hash_size>
-void BayanDataSizeFirstImpl<Hash, hash_size>::Add(fs::path file)
-{
-    m_data[fs::file_size(file)].emplace(file);
-}
-
-/*!
  * @brief BayanDataSizeFirstImpl<Hash, hash_size>::RemoveDuplicate Удаление дубликатов из списка файлов
  */
 template <typename Hash, size_t hash_size>
@@ -388,13 +295,9 @@ void BayanDataHashChunkImpl<Hash, hash_size>::RemoveDuplicate()
             {
                 // Check end of file
                 std::vector<size_t> eof;
-                for (auto idx : q.second)
-                {
-                    if (m_data[idx].num_of_blocks == cur_block - 1)
-                    {
-                        eof.emplace_back(idx);
-                    }
-                }
+                std::copy_if(q.second.cbegin(), q.second.cend(), std::back_inserter(eof),
+                             [&](auto idx){ return m_data[idx].num_of_blocks == cur_block - 1; });
+
 
                 // Delete duplicates
                 bool first = true;
@@ -439,3 +342,93 @@ void BayanDataHashChunkImpl<Hash, hash_size>::Add(fs::path file)
     size_t n_blocks = (fs::file_size(file) + block_size - 1) / block_size;
     m_data.emplace_back(file, n_blocks);
 }
+
+
+// Alternative implemetations
+///*!
+// * @brief BayanDataImpl<Hash, hash_size>::RemoveDuplicate Удаление дубликатов из списка файлов
+// */
+//template <typename Hash, size_t hash_size>
+//void BayanDataImpl<Hash, hash_size>::RemoveDuplicate()
+//{
+//    for (const auto& hashcode : m_data)
+//    {
+//        auto cmpfile = *hashcode.second.begin();
+//        bool first = true;
+//        for (const auto& file : hashcode.second)
+//        {
+//            if (first)
+//            {
+//                first = false;
+//                continue;
+//            }
+//            // Duplicate removal part, same hash and size, or change to next
+//            if (cmpfile.size == file.size)
+//            {
+//                fs::remove(file.path);
+//                std::cout << "File removed: " << file.path << std::endl;
+//            }
+//            else
+//                cmpfile = file;
+//        }
+//    }
+//}
+
+///*!
+// * @brief BayanDataImpl<Hash, hash_size>::Add Добавление в список файлов для обработки
+// * @param file
+// */
+//template <typename Hash, size_t hash_size>
+//void BayanDataImpl<Hash, hash_size>::Add(fs::path file)
+//{
+//    auto tmphash = hash_func(file.string(), buffer_size);
+
+//    m_data[tmphash].emplace(file, fs::file_size(file));
+//}
+
+///*!
+// * @brief BayanDataSizeFirstImpl<Hash, hash_size>::RemoveDuplicate Удаление дубликатов из списка файлов
+// */
+//template <typename Hash, size_t hash_size>
+//void BayanDataSizeFirstImpl<Hash, hash_size>::RemoveDuplicate()
+//{
+//    for (const auto& filesize : m_data)
+//    {
+//        if (filesize.second.size() > 1)
+//        {
+//            std::map<std::array<char, hash_size>, std::vector<fs::path>> hashes;
+//            for (const auto& file : filesize.second)
+//            {
+//                auto tmphash = hash_func(file.string(), buffer_size);
+//                hashes[tmphash].emplace_back(file);
+//            }
+
+//            for (const auto& hash : hashes)
+//            {
+
+//                auto cmpfile = *hash.second.begin();
+//                bool first = true;
+//                for (const auto& file : hash.second)
+//                {
+//                    if (first)
+//                    {
+//                        first = false;
+//                        continue;
+//                    }
+//                    fs::remove(file);
+//                    std::cout << "File removed: " << file.string() << std::endl;
+//                }
+//            }
+//        }
+//    }
+//}
+
+///*!
+// * @brief BayanDataSizeFirstImpl<Hash, hash_size>::Add Добавление в список файлов для обработки
+// * @param file
+// */
+//template <typename Hash, size_t hash_size>
+//void BayanDataSizeFirstImpl<Hash, hash_size>::Add(fs::path file)
+//{
+//    m_data[fs::file_size(file)].emplace(file);
+//}

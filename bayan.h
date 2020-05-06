@@ -53,38 +53,6 @@ struct BayanData
 };
 
 /*!
- * @brief The BayanDataImpl struct реализация интерфейса считывающая все файлы и хранящая хэш для них
- */
-template <typename Hash, size_t hash_size = Hash::size>
-struct BayanDataImpl : BayanData
-{
-    BayanDataImpl(size_t buffer_size) : buffer_size(buffer_size){}
-    virtual void Add(fs::path file) override;
-
-    virtual void RemoveDuplicate() override;
-private:
-    Hash hash_func;
-    size_t buffer_size;
-    std::map<std::array<char, hash_size>, std::set<FileData>> m_data;
-};
-
-/*!
- * @brief The BayanDataSizeFirstImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш
- */
-template <typename Hash, size_t hash_size = Hash::size>
-struct BayanDataSizeFirstImpl : BayanData
-{
-    BayanDataSizeFirstImpl(size_t buffer_size) : buffer_size(buffer_size){}
-    virtual void Add(fs::path file) override;
-
-    virtual void RemoveDuplicate() override;
-private:
-    Hash hash_func;
-    size_t buffer_size;
-    std::map<size_t, std::set<fs::path>> m_data;
-};
-
-/*!
  * @brief The FileInfo struct
  */
 template <size_t hash_size>
@@ -141,4 +109,36 @@ private:
 Bayan ParseArgs(int argc, char *argv[]);
 
 
+// Alternative implementations
+///*!
+// * @brief The BayanDataImpl struct реализация интерфейса считывающая все файлы и хранящая хэш для них
+// */
+//template <typename Hash, size_t hash_size = Hash::size>
+//struct BayanDataImpl : BayanData
+//{
+//    BayanDataImpl(size_t buffer_size) : buffer_size(buffer_size){}
+//    virtual void Add(fs::path file) override;
+
+//    virtual void RemoveDuplicate() override;
+//private:
+//    Hash hash_func;
+//    size_t buffer_size;
+//    std::map<std::array<char, hash_size>, std::set<FileData>> m_data;
+//};
+
+///*!
+// * @brief The BayanDataSizeFirstImpl struct реализация интерфейса сравнивающая файлы по размеру и при совпадении сравнивающая хэш
+// */
+//template <typename Hash, size_t hash_size = Hash::size>
+//struct BayanDataSizeFirstImpl : BayanData
+//{
+//    BayanDataSizeFirstImpl(size_t buffer_size) : buffer_size(buffer_size){}
+//    virtual void Add(fs::path file) override;
+
+//    virtual void RemoveDuplicate() override;
+//private:
+//    Hash hash_func;
+//    size_t buffer_size;
+//    std::map<size_t, std::set<fs::path>> m_data;
+//};
 #endif
